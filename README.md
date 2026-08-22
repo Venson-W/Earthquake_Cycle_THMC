@@ -145,21 +145,7 @@ Example problems should be placed in the `examples/` directory. Each example sho
 
 ## Citation
 
-If you use this simulator in academic work, please cite the associated publication:
-
-```bibtex
-@article{earthquake_cycle_thmc,
-  title   = {Shear Localization and Delocalization in the Earthquake Cycle},
-  author  = {Author Name},
-  journal = {Journal Name},
-  year    = {Year},
-  volume  = {Volume},
-  pages   = {Pages},
-  doi     = {DOI}
-}
-```
-
-Please replace this placeholder with the final publication information.
+The paper is in preparation.
 
 ## Contributing
 
