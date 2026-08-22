@@ -1,0 +1,6 @@
+function dV_dtauf = dVdtauf(V0, a, sigma_eff, tauf, f0, b, theta, Dc)
+    % Compute the derivative of V with respect to tauf
+    dV_dtauf = 2 .* V0 ./ (a .* sigma_eff) .* ...
+        cosh(tauf ./ (a .* sigma_eff)) .* ...
+        exp(-1./a .* (f0 + b .* log(theta .* V0 ./ Dc)));
+end
