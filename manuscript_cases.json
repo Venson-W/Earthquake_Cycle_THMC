@@ -1,0 +1,56 @@
+{
+  "cycles_0": {
+    "gamma_c_override": 1.0,
+    "reference_profile": "uniform",
+    "source_case": "cycles_0",
+    "boundary_type": "dirichlet"
+  },
+  "cycles_001": {
+    "gamma_c_override": 1.0,
+    "reference_profile": "uniform",
+    "source_case": "cycles_001",
+    "boundary_type": "dirichlet"
+  },
+  "cycles_011": {
+    "gamma_c_override": 1.0,
+    "reference_profile": "uniform",
+    "source_case": "cycles_011",
+    "boundary_type": "dirichlet"
+  },
+  "cycles_101": {
+    "gamma_c_override": 1.0,
+    "reference_profile": "uniform",
+    "source_case": "cycles_101",
+    "case_code": "101",
+    "lambda_n": 1e-05,
+    "field_interval": 0.0001,
+    "boundary_type": "dirichlet"
+  },
+  "dense_000": {
+    "gamma_c_override": 1.0,
+    "reference_profile": "uniform",
+    "source_case": "dense_000",
+    "event_max_dt": 1e-05,
+    "capture_mode": "accepted_state_threshold",
+    "max_fields": 400000,
+    "boundary_type": "dirichlet"
+  },
+  "dense_001": {
+    "gamma_c_override": 1.0,
+    "reference_profile": "uniform",
+    "source_case": "dense_001",
+    "event_max_dt": 1e-05,
+    "capture_mode": "accepted_state_threshold",
+    "max_fields": 400000,
+    "boundary_type": "dirichlet"
+  },
+  "dense_011": {
+    "gamma_c_override": 1.0,
+    "reference_profile": "uniform",
+    "source_case": "dense_011",
+    "event_max_dt": 1e-05,
+    "capture_mode": "accepted_state_threshold",
+    "max_fields": 400000,
+    "boundary_type": "dirichlet"
+  }
+}

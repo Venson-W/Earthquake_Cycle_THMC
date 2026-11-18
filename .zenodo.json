@@ -1,0 +1,30 @@
+{
+  "title": "Earthquake Cycle THMC",
+  "version": "1.1.0",
+  "upload_type": "software",
+  "publication_date": "2026-11-18",
+  "description": "MATLAB earthquake-cycle software using the current manuscript simulation code. Coupled multiscale rate-and-state friction, thermal pressurization, dilatancy, thermal decomposition, and porosity-dependent permeability. Dirichlet boundaries are the default and Robin boundaries are optional. The fluid storage coefficient remains fixed at its reference value.",
+  "creators": [
+    {
+      "name": "Wang, Yuhan",
+      "orcid": "0000-0003-0490-5977",
+      "affiliation": "ETH Zurich, Swiss Seismological Service"
+    }
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "keywords": [
+    "earthquake cycles",
+    "fault gouge",
+    "shear localization",
+    "thermal pressurization",
+    "MRSF"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Venson-W/Earthquake_Cycle_THMC/tree/v1.1.0",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}

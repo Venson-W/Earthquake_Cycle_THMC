@@ -1,175 +1,132 @@
 # Earthquake Cycle THMC
 
-A numerical earthquake-cycle simulator for investigating the development, evolution, and interaction of **shear localization and delocalization** in fault zones.
+**Version 1.1.0** · **Yuhan Wang** · [ORCID 0000-0003-0490-5977](https://orcid.org/0000-0003-0490-5977)
 
-The simulator is intended for studying earthquake-cycle processes involving coupled thermo-hydro-mechanical-chemical (THMC) behavior.
+MATLAB simulations of shear localization and delocalization in earthquake cycles,
+using multiscale rate-and-state friction (MRSF), thermal pressurization, dilatancy,
+thermal decomposition, and porosity-dependent permeability.
 
-## Overview
+This release packages the code used for the completed manuscript calculations of
+30 October 2026. The default boundary condition is **Dirichlet**. **Robin** exchange
+is available as an explicit option. The source is MATLAB; no compilation is needed.
 
-Fault deformation may transition between distributed and localized shear during an earthquake cycle. This project provides a computational framework for exploring these transitions and their effects on fault-zone mechanics.
+## Requirements and installation
 
-The simulator can be used to investigate:
-
-- Formation and evolution of localized shear zones
-- Shear delocalization during interseismic or postseismic periods
-- Earthquake nucleation and cyclic slip
-- Stress and deformation evolution within fault zones
-- Coupled thermal, hydraulic, mechanical, and chemical processes
-- Sensitivity to material properties, loading conditions, and model parameters
-
-## Physical Model
-
-The model considers the evolution of fault-zone deformation under applied loading. A representative shear-stress relation may be written as
-
-$$
-\tau = \sigma_{\mathrm{eff}} f,
-$$
-
-where
-
-- $\tau$ is the shear stress,
-- $\sigma_{\mathrm{eff}}$ is the effective normal stress, and
-- $f$ is the friction coefficient.
-
-The effective normal stress is
-
-$$
-\sigma_{\mathrm{eff}} = \sigma_n - p,
-$$
-
-where $\sigma_n$ is the total normal stress and $p$ is the pore-fluid pressure.
-
-A characteristic measure of shear strain is
-
-$$
-\gamma = \frac{\partial u}{\partial y},
-$$
-
-where $u$ is the displacement parallel to the fault and $y$ is the coordinate normal to the fault.
-
-> The precise governing equations, constitutive laws, and numerical methods implemented by this repository should be documented in the corresponding source files and publications.
-
-## Repository Structure
-
-```text
-Earthquake_Cycle_THMC/
-├── README.md
-├── LICENSE
-├── src/            # Main source code
-├── input/          # Model parameters and input files
-├── examples/       # Example simulations
-├── scripts/        # Preprocessing and postprocessing tools
-├── tests/          # Verification and test cases
-└── output/         # Simulation results (normally ignored by Git)
-```
-
-The actual directory structure may differ from this example.
-
-## Requirements
-
-Document the required compiler, interpreter, numerical libraries, and visualization tools here. For example:
-
-- Supported operating system: Windows, Linux, or macOS
-- Compiler or interpreter: `[specify name and version]`
-- Required numerical libraries: `[specify dependencies]`
-- Optional visualization tools: `[specify tools]`
-
-## Installation
-
-Clone the repository:
+MATLAB R2023a (tested), with no additional MATLAB toolboxes required by the supplied
+simulation entry points. Download a release archive or clone this repository, then
+open MATLAB in the repository root.
 
 ```bash
-git clone git@github.com:YOUR_GITHUB_USERNAME/Earthquake_Cycle_THMC.git
+git clone https://github.com/Venson-W/Earthquake_Cycle_THMC.git
 cd Earthquake_Cycle_THMC
 ```
 
-Then build or install the simulator using the appropriate command:
+## Run
 
-```bash
-# Replace this example with the actual build command
-make
+```matlab
+% Current reactive, evolving-permeability manuscript case; Dirichlet default.
+result = run_thmc('THMC*');
+
+% Explicit Robin boundaries, with all other case defaults retained.
+result = run_thmc('THMC*', struct('boundary_type','robin'));
+
+% Current non-reactive evolving-permeability manuscript case.
+result = run_thmc('THM*');
+
+% A short setup run (seconds); full case durations remain the production defaults.
+result = run_thmc('THMC*', struct('end_seconds',0.001,'dt_limit',1e-4));
+disp(result.output_directory)
 ```
 
-## Running a Simulation
+Every run creates a new directory beneath `output/`, or uses an explicitly supplied
+`options.output_directory`. Existing output directories are refused. `p` and `T`
+are changes from ambient pressure and temperature; all time options are in seconds.
+Scalar `timev` histories are in years (365 days); spatial `time_seconds` is in seconds.
+Pressure and shear stress are in Pa, temperature change in K, and slip rate in m/s.
 
-Prepare or select an input configuration and run the simulator:
-
-```bash
-# Replace this example with the actual execution command
-./earthquake_cycle_thmc input/example.in
-```
-
-Simulation results should be written to a designated output directory.
-
-## Input Parameters
-
-Typical inputs may include:
-
-| Parameter | Description | Unit |
+| Name | Exact production source | Processes |
 |---|---|---|
-| $\sigma_n$ | Applied normal stress | Pa |
-| $p$ | Pore-fluid pressure | Pa |
-| $\tau$ | Shear stress | Pa |
-| $V$ | Slip or loading velocity | m/s |
-| $G$ | Shear modulus | Pa |
-| $\eta$ | Effective viscosity | Pa s |
-| $T$ | Temperature | K |
-| $t_{\mathrm{end}}$ | Final simulation time | s |
+| `M` / `cycles_0` | cycles_0 | Mechanical control; thermal/hydraulic stepping disabled |
+| `THM` / `cycles_001` | cycles_001 | Thermal pressurization and dilatancy |
+| `THMC` / `cycles_011` | cycles_011 | Thermal pressurization, dilatancy and decomposition |
+| `THM*` / `cycles_101` | cycles_101 | THM with porosity-dependent permeability |
+| `THMC*` / `cycles_111` | cycles_111 | THMC with geometric chemical porosity and permeability evolution |
+| `THM_no_dilatancy` / `dense_000` | dense_000 | Detailed first event without dilatancy |
+| `dense_001` | dense_001 | Detailed THM first event |
+| `dense_011` | dense_011 | Detailed THMC first event |
 
-Update this table to match the parameters used by the code.
+The named cases dispatch to their own production implementations and parameter sets.
+They are not regenerated by changing switches in a different case's solver. Dense
+cases end after their own captured first event and decay, as in the production code.
+The star denotes permeability evolution. The mechanical control has no active
+thermal/hydraulic boundary exchange. Gaussian comparison reruns are not part of this
+release's current manuscript case set.
 
-## Output
+## Boundary conditions
 
-Depending on the selected model configuration, output may include:
+**Dirichlet (default):** `p=0` and `T=0` at both gouge edges, i.e. the ambient absolute
+pressure and temperature. These values are imposed exactly, not with a large finite
+exchange coefficient.
 
-- Displacement and velocity
-- Shear strain and shear-strain rate
-- Stress evolution
-- Pore-fluid pressure
-- Temperature
-- State or internal variables
-- Localization metrics
-- Earthquake timing and recurrence intervals
+**Robin (optional):** outward fluid and heat exchange is proportional to the edge
+anomaly relative to ambient. In the normalized pressure equation the exchange factor
+is `hydraulic_diffusivity / hydraulic_layer_thickness`; for temperature it is
+`thermal_conductivity / (rho_c * thermal_layer_thickness)`. This assumes equal host
+and gouge reference storage. Host properties remain fixed while gouge permeability
+evolves. A fixed boundary layer is used; no diffusive host-rock history is integrated.
 
-Large output files should not normally be committed to Git. Add their directories or filename patterns to `.gitignore`.
+```matlab
+options.boundary_type = 'robin';
+options.robin.hydraulic_layer_thickness = 1e-4;
+options.robin.thermal_layer_thickness = 1e-4;
+result = run_thmc('THM*', options);
+```
 
-## Examples
+Robin defaults use the initial gouge hydraulic diffusivity and thermal conductivity,
+and physical layer thickness `h/299` (about 1.67 micrometres for `h=0.5 mm`). Keep this
+physical thickness fixed during grid refinement. Each physical Robin setting accepts
+a scalar or `[south north]` pair. Setting a host transport property to zero gives
+zero flux for that field. The current THMC* solver uses collocated sources and face
+diffusivities. The archived case solvers retain their production interior indexing;
+their Robin extension changes the boundary equations while preserving that indexing.
 
-Example problems should be placed in the `examples/` directory. Each example should document:
+## Porosity and storage
 
-1. Its physical purpose
-2. Required input files
-3. Execution command
-4. Expected output
-5. Relevant plotting or postprocessing commands
+The current physical assumptions are retained. Permeability depends on total
+porosity through `k_f = k_0 (phi/phi_0)^3` in starred cases, while the fluid storage
+coefficient remains fixed at its reference value (`Sc = 2.97e-10 Pa^-1` in the
+provided configurations). The thermal pressurization coefficient is also fixed.
+Dilatancy and reaction contributions still enter the pressure source terms.
+`gamma_c=1` and the initial dilatant porosity change is zero. Production parameter
+and integration differences between cases are retained and recorded in their sources.
+
+## Outputs and source layout
+
+`fault_slip_data.mat` contains scalar histories; modern/dense cases additionally
+write `first_event_fields.mat` and `final_state.mat`. Other archived cycle cases write
+`fault_slip_field.mat` and `inelast_completion.mat`. `release_run.mat` records the case,
+boundary mode, options, completion status, and software version for every run.
+
+- `run_thmc.m`: common entry point.
+- `src/`: simulation drivers and the numerical helpers they require.
+- `THMC_star.json` and `manuscript_cases.json`: current case inputs.
+- `VERSION` and `thmc_version.m`: software version.
+
+The release contains runtime code and the necessary inputs and documentation.
+Plotting scripts, postprocessing, simulation outputs, old source archives, and local
+test scripts are excluded. Boundary checks and 16 short case/boundary integrations
+passed under MATLAB R2023a before release.
 
 ## Citation
 
-The paper is in preparation.
+**Wang, Yuhan (2026). Earthquake Cycle THMC (Version 1.1.0) [Computer software].**
+[GitHub release](https://github.com/Venson-W/Earthquake_Cycle_THMC/releases/tag/v1.1.0).
 
-## Contributing
+GitHub reads `CITATION.cff`; Zenodo reads the matching `.zenodo.json` metadata when
+archiving this release. Both identify Yuhan Wang and the ORCID above. The manuscript
+is in preparation; no unpublished article DOI is supplied.
 
-Contributions, bug reports, and suggestions are welcome. For substantial changes, please open an issue first to discuss the proposed modification.
+## License and acknowledgement
 
-When contributing:
-
-1. Create a new branch.
-2. Make and test your changes.
-3. Document any new parameters or functionality.
-4. Submit a pull request with a clear description.
-
-## License
-
-This project is licensed under the MIT License. See the [`LICENSE`](LICENSE) file for details.
-
-## Disclaimer
-
-This software is provided for research purposes without warranty. Users are responsible for verifying that the numerical methods, parameter choices, and model assumptions are appropriate for their applications.
-
-## Contact
-
-For questions or collaboration inquiries, contact:
-
-**Yuhan Wang**  
-Swiss Seismological Service (SED) and ETH Zurich
-yuhan.wang@sed.ethz.ch
+[MIT License](LICENSE). Original development by Yuhan Wang and Elias Rafn Heimisson
+is acknowledged in [AUTHORS.md](AUTHORS.md). Contact: yuhan.wang@sed.ethz.ch.
