@@ -1,6 +1,0 @@
-function dgammadot_dtauf = dVdtauf(gammadot0, a, sigma_eff, tauf, f0, b, theta, Dc_prime)
-    % Compute the derivative of gammadot with respect to tauf
-    dgammadot_dtauf = 2 .* gammadot0 ./ (a .* sigma_eff) .* ...
-        cosh(tauf ./ (a .* sigma_eff)) .* ...
-        exp(-1./a .* (f0 + b .* log(theta .* gammadot0 ./ Dc_prime)));
-end
